@@ -6,14 +6,27 @@ var index = -1;
 const defaultLen = 20;
 
 const random = (pre) => {
-  return new Promise((resolve, reject) => {
-    if(index == -1){
-      initRandomDatas(pre).then(dataList => {
-        datas = dataList;
+  // 判断是否需要初始化
+  const isNeedInit = index === -1
+
+  if (isNeedInit) {
+    return new Promise((resolve, reject) => {
+      initRandomDatas(pre).then(() => {
         resolve(nextData());
       })
+    })
+  }
+
+  return new Promise((resolve, reject) => {
+    let i = index + 1;
+    console.log("i ", i)
+    if(i >= datas.length){
+      index = -1
+      random(pre).then(res => {
+        resolve(res)
+      })
     } else {
-      resolve(nextData());
+      resolve(nextData())
     }
   })
 }
@@ -35,6 +48,8 @@ function initRandomDatas(pre){
           res.data.forEach(function (item, index, array) {
             dataList.push({id: item.id, ch: {path: item.chinese.audio_path, text: item.chinese.text}, en: {path: item.english.audio_path, text: item.english.text}});
           });
+          datas = dataList
+          console.log(" datas " ,datas, res.data)
           resolve(dataList);
         });
       });
@@ -43,10 +58,6 @@ function initRandomDatas(pre){
 
 function nextData(){
   index++;
-  if(index > datas.length){
-    initRandomDatas();
-    index = 0;
-  }
   return datas[index];
 }
 
