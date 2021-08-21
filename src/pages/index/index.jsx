@@ -1,123 +1,103 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Taro from "@tarojs/taro";
-import { View, Text, Image, Button } from "@tarojs/components";
-import Logo from "../../assert/image/logo.png";
-import { NavBar } from "taro-navigationbar-v3";
+import { View, Text } from "@tarojs/components";
+import { random } from "../../service/random";
+import Button from "../../component/button";
+import NavBar from "../../component/nav";
+import qLoop from "./qloop";
+import cloudbase from "../../cloudbase";
 
-const createInnerAudioContext = (src) => {
-  const ctx = Taro.createInnerAudioContext({ useWebAudioImplement: true });
-  if (src) ctx.src = src;
-  return ctx;
-};
-
-const buildAudioSrc = (path) => {
-  return `https://6465-default-5gswefsf8440cf4a-1306659255.tcb.qcloud.la${path}`;
-};
+const INIT_LOADING_MESSAGE = "加载音频中";
 
 const Index = () => {
-  const [initLoading, setInitLoading] = React.useState(true);
-  const [innerAudioContext, setInnerAudioContext] = React.useState(
-    createInnerAudioContext()
-  );
+  // 初始化 loading
+  const [initLoading, setInitLoading] = useState(true);
+  // 当前播放的音频
+  const [loop, setLoop] = useState(undefined);
+  // 循环队列
+  const [q, setQ] = useState(undefined);
+  // 当前音频的文字
+  const [text, setText] = useState(undefined);
 
-  const [queue, setQueue] = React.useState([]);
-  const [text, setText] = React.useState(undefined);
-
+  // 播放音频
   const play = () => {
-    setText(undefined);
-    innerAudioContext.play();
+    const task = q.shift();
+    const src = cloudbase.auidoSrc(task.path);
+
+
+    // 创建新的上下文儿
+    const ctx = Taro.createInnerAudioContext({ useWebAudioImplement: true })
+    ctx.src = src;
+    ctx.onCanplay(() => {
+      ctx.play()
+    });
+    // console.log("play", task, q.length());
+
+    // 2.监听音频停止
+    ctx.onEnded(onEnded);
+
+    // 展示文本
+    setText(task.text);
   };
 
-  React.useEffect(() => {
-    if (initLoading) {
-      Taro.showLoading({
-        title: "加载中",
-      });
+  // 当音频播放停止
+  const onEnded = () => {
+    if (q.isEmpty()) {
+      randomAndSetQ();
     } else {
+      play();
+    }
+  };
+
+  const randomAndSetQ = () => {
+    const res = random(loop);
+
+    // 创建一个队列用于循环播放
+    setQ(qLoop(res));
+    setLoop(res);
+  };
+
+  // 监听首次调用并关闭 loading
+  useEffect(() => {
+    randomAndSetQ();
+    setInitLoading(false);
+  }, []);
+
+  // 首次进入加载 loading
+  useEffect(() => {
+    Taro.showLoading({
+      title: INIT_LOADING_MESSAGE,
+    });
+  }, []);
+
+  // 清除 laoding
+  useEffect(() => {
+    if (!initLoading) {
       Taro.hideLoading();
     }
   }, [initLoading]);
 
-  React.useEffect(() => {
-    const db = Taro.cloud.database();
-    db.collection("audios")
-      .orderBy("sequence", "asc")
-      .get()
-      .then((res) => {
-        setQueue([
-          {
-            audio: res.data[0].english,
-            loop: 3,
-            timeout: 1000,
-          },
-          {
-            audio: res.data[0].chinese,
-          },
-        ]);
-        setInitLoading(false);
-      });
-  }, []);
-
-  const firstPlay = (it) => {
-    innerAudioContext.src = buildAudioSrc(it.audio.audio_path);
-    innerAudioContext.onCanplay(() => {
+  // 监听队列
+  useEffect(() => {
+    if (q) {
       play();
-      innerAudioContext.offCanplay();
-    });
-  };
-
-  React.useEffect(() => {
-    if (queue.length > 0) {
-      let i = 0;
-      let it = queue[i];
-
-      firstPlay(it);
-
-      innerAudioContext.onEnded(() => {
-        setText(it.audio.text);
-        if (it.loop && --it.loop > 0) {
-          if (it.timeout) {
-            setTimeout(play, it.timeout);
-          } else {
-            play();
-          }
-        } else {
-          if (++i < queue.length) {
-            it = queue[i];
-            firstPlay(it);
-          } else {
-            console.log("load next");
-          }
-        }
-      });
     }
-  }, [queue]);
+  }, [q]);
 
   return (
     <View className="root">
-      <NavBar
-        background="#243d5b"
-        color="#dc4225"
-        renderLeft={
-          <View className="flex items-center ml-4">
-            <Image src={Logo} className="inline-block w-5 h-5 mr-2" />
-            <Text className="inline-block h-5 flex items-center text-primary-color text-xl">
-              循环英语
-            </Text>
-          </View>
-        }
-      />
+      <NavBar />
       <View className="mt-20 px-4 flex flex-col">
         <Text selectable className="text-primary-color text-3xl">
           {text}
         </Text>
       </View>
 
-      <View className="absolute bottom-0 px-4 mb-10 flex w-full">
-        <Button className="bg-primary h-12 w-full text-white rounded-2xl flex justify-center items-center shadow-lg text-base">
-          播放
-        </Button>
-      </View>
+      {!initLoading && (
+        <View className="absolute bottom-0 px-4 mb-10 flex w-full">
+          <Button>跳过</Button>
+        </View>
+      )}
     </View>
   );
 };
