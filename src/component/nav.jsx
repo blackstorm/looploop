@@ -5,12 +5,11 @@ import { View, Text, Image } from "@tarojs/components";
 const NavBar = () => {
   return (
     <TNavBar
-      background="#243d5b"
-      color="#dc4225"
+      background="#e94c3d"
       renderLeft={
         <View className="flex items-center ml-4">
           <Image src={Logo} className="inline-block w-5 h-5 mr-2" />
-          <Text className="inline-block h-5 flex items-center text-primary-color text-xl">
+          <Text className="inline-block h-5 text text-white flex items-center text-xl">
             循环英语
           </Text>
         </View>

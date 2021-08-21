@@ -4,7 +4,7 @@ const Button = (props) => {
   return (
     <TBUtton
       {...props}
-      className="bg-primary h-12 w-full text-white rounded-2xl flex justify-center items-center shadow-lg text-base"
+      className="btn-bg-color btn-text-color border border-gray-200 h-12 w-full rounded-2xl flex justify-center items-center shadow-lg text-base"
     ></TBUtton>
   );
 };
