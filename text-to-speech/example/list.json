@@ -1,10 +1,17 @@
 [
   {
-    "name": "zh-1.mp3",
-    "text": "你好，我叫小芳。"
+    "name": "阿甘正传-zh-01.mp3",
+    "text": "人生就像一盒巧克力，你永远不知道下一块是什么味道。",
+    "speaker": "zh-CN-YunyangNeural"
   },
   {
-    "name": "zh-2.mp3",
-    "text": "我来自中国上海。"
+    "name": "教父-zh-01.mp3",
+    "text": "与朋友保持亲近，对敌人更该如此。",
+    "speaker": "zh-CN-YunyangNeural"
+  },
+  {
+    "name": "银翼杀手(1982)-zh-01.mp3",
+    "text": "那些时刻将被时间吞没，就像雨中的眼泪。",
+    "speaker": "zh-CN-YunyangNeural"
   }
 ]

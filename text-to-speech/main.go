@@ -42,11 +42,14 @@ func main() {
 	for _, a := range inputer.Audios {
 		wg.Add(1)
 		go func(item audio.Audio) {
-			bytes, err := azClient.Text2Speech(item.Text, "mp3")
+			bytes, err := azClient.Text2Speech(item, "mp3")
 			if err != nil {
-				fmt.Printf("Text2Speech %s error %v", item.Name, err)
+				fmt.Printf("Text2Speech %s error %v \n", item.Name, err)
 			} else {
-				fileOutputer.Output(bytes, item.Name)
+				err := fileOutputer.Output(bytes, item.Name)
+				if err != nil {
+					fmt.Printf("Text2Speech %s error %v \n", item.Name, err)
+				}
 			}
 			wg.Done()
 		}(a)

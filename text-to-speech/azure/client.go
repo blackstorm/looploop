@@ -6,6 +6,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"time"
+
+	"github.com/blackstorm/looplooper/text2speech/audio"
 )
 
 const apiKey = "935f71f796624da08c2df9f7da66cc8c"
@@ -52,10 +54,10 @@ func NewClientAndInit() (*Client, error) {
 	}, nil
 }
 
-func (c *Client) Text2Speech(text string, format string) ([]byte, error) {
-	fmt.Printf("text 2 speech call. text is %s format to %s\n", text, format)
+func (c *Client) Text2Speech(audio audio.Audio, format string) ([]byte, error) {
+	fmt.Printf("text 2 speech call. text is %s format to %s\n", audio.Text, format)
 	// create a ssml xml
-	ssml := newSSML(text)
+	ssml := newSSML(audio.Text, audio.Speaker)
 
 	// make a request
 	req, err := http.NewRequest(http.MethodPost, text2SpeechApi, bytes.NewReader(ssml.toBytes()))
@@ -67,7 +69,7 @@ func (c *Client) Text2Speech(text string, format string) ([]byte, error) {
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.token))
 	req.Header.Set("Content-type", "application/ssml+xml")
 	req.Header.Set("X-Microsoft-OutputFormat", "audio-48khz-96kbitrate-mono-mp3")
-	req.Header.Set("audio-48khz-96kbitrate-mono-mp3", "looplooper-text2Speech-client-gohttp")
+	req.Header.Set("User-Agent", "looplooper-text2Speech-client-gohttp")
 
 	// send request
 	resp, err := c.hClient.Do(req)
