@@ -53,21 +53,14 @@ const Index = () => {
 
     // 音频管理
     const bgm = Taro.getBackgroundAudioManager();
-    const presrc = bgm.src;
-
+    // 设置 src 后会自动播放
+    // 微信开发者工具有 BUG 不用关心
+    bgm.src = src;
+    bgm.currentTime = 0;
     bgm.title = task.text;
     bgm.singer = "循环英语";
     bgm.epname = "RANDOM";
     bgm.coverImgUrl = LOOPLOOP_COVER_IMAGE_URL;
-    bgm.src = src;
-
-    // 修复微信自动播放 BUG
-    if (presrc != src) {
-      bgm.stop();
-      bgm.onCanplay(() => {
-        bgm.play();
-      });
-    }
 
     // 音频生命周期钩子
     bgm.onEnded(onEnded);
