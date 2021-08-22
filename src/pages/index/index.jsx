@@ -53,33 +53,40 @@ const Index = () => {
 
     // 音频管理
     const bgm = Taro.getBackgroundAudioManager();
+    const presrc = bgm.src;
+
     bgm.title = task.text;
     bgm.singer = "循环英语";
     bgm.epname = "RANDOM";
     bgm.coverImgUrl = LOOPLOOP_COVER_IMAGE_URL;
     bgm.src = src;
 
-    bgm.onCanplay(() => {
-      bgm.play();
-    });
+    // 修复微信自动播放 BUG
+    if (presrc != src) {
+      bgm.stop();
+      bgm.onCanplay(() => {
+        bgm.play();
+      });
+    }
 
+    // 音频生命周期钩子
     bgm.onEnded(onEnded);
     // 仅 IOS生效
     bgm.onNext(onNext);
 
-
     // 展示文本
     setText(task.text);
-    // 更新 audioContext
   };
 
-  // 当音频播放停止
+  // 当音频播完成
   const onEnded = () => {
+    let t = null;
     if (q.isEmpty()) {
-      // randomAndSetQ();
+      t = setTimeout(randomAndSetQ, 2000);
     } else {
-      setTimer(setTimeout(play, 750));
+      t = setTimeout(play, 1500);
     }
+    setTimer(t);
   };
 
   // 下一首
@@ -89,7 +96,6 @@ const Index = () => {
 
   // 随机音频并设置队列
   const randomAndSetQ = () => {
-    setInitLoading(true);
     random(loop).then((res) => {
       setLoop(res);
       setQ(qLoop(res));
@@ -101,8 +107,9 @@ const Index = () => {
   useEffect(() => {
     // 小程序转发支持
     Taro.showShareMenu({
-      withShareTicket: true
-    })
+      withShareTicket: true,
+    });
+    setInitLoading(true);
     randomAndSetQ();
   }, []);
 

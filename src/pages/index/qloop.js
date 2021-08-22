@@ -6,8 +6,7 @@ const qLoop = (audio) => {
   tasks.push(audio.en)
   tasks.push(audio.en)
   tasks.push(audio.en)
-  // tasks.push(audio.zh)
-  tasks.push(audio.ch)
+  tasks.push(audio.zh)
   return createQueue(tasks);
 }
 
