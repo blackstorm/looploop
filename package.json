@@ -40,6 +40,7 @@
     "@tarojs/react": "3.3.1",
     "@tarojs/runtime": "3.3.1",
     "@tarojs/taro": "3.3.1",
+    "ahooks": "^2.10.9",
     "react": "^17.0.0",
     "react-dom": "^17.0.0",
     "taro-navigationbar-v3": "^3.1.1"
