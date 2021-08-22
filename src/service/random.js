@@ -46,7 +46,7 @@ function initRandomDatas(pre){
         }).get().then(res => {
           let dataList = [];
           res.data.forEach(function (item, index, array) {
-            dataList.push({id: item.id, ch: {path: item.chinese.audio_path, text: item.chinese.text}, en: {path: item.english.audio_path, text: item.english.text}});
+            dataList.push({id: item.id, zh: {path: item.chinese.audio_path, text: item.chinese.text}, en: {path: item.english.audio_path, text: item.english.text}});
           });
           datas = dataList
           console.log(" datas " ,datas, res.data)
