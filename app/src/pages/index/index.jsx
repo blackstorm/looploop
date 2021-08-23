@@ -7,6 +7,7 @@ import NavBar from "../../component/nav";
 import qLoop from "./qloop";
 import cloudbase from "../../cloudbase";
 import { useUpdateEffect } from "ahooks";
+import Statistics from "../../component/statistics";
 
 const INIT_LOADING_MESSAGE = "加载音频中";
 const SKIP_AUDIO_TOAST_MESSAGE = "已跳过当前音频";
@@ -134,9 +135,13 @@ const Index = () => {
         </Text>
       </View>
 
+      <View className="absolute bottom-20 px-4 mb-10 px-4 ">
+        <Statistics />
+      </View>
+
       {!initLoading && (
         <View className="absolute bottom-0 px-4 mb-10 flex w-full">
-          <Button onClick={onClickSkip}>跳过</Button>
+          <Button onClick={onClickSkip}>下一个</Button>
         </View>
       )}
     </View>

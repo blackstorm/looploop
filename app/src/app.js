@@ -22,11 +22,13 @@ const App = (props) => {
   };
 
   React.useEffect(() => {
+    // 更新 APP
+    checkAndUpdate();
+
+    // init cloud
     wx.cloud.init({
       env: "default-5gswefsf8440cf4a",
     });
-    // 更新 APP
-    checkAndUpdate();
   }, []);
 
   return props.children;
