@@ -1,0 +1,43 @@
+#app {
+  height: 97.1vh;
+  max-height: 100vh;
+}
+
+page,view,text,swiper,swiper-item,image,navigator{
+  padding: 0;    
+  margin: 0;
+  box-sizing: border-box;
+}
+
+page {
+  width: 100%;
+  height: 100%;
+}
+
+.root {
+  width: 100%;
+  height: 100%;
+  /* background-color: #abc3db; */
+  background-color: #e94c3d;
+}
+
+.nav-text-color {
+  color: #ffba85;
+}
+
+.text-primary-color {
+  color: black;
+}
+
+.bg-primary {
+  /* background-color: #dc4225; */
+  background-color: #e94c3d;
+}
+
+.btn-bg-color {
+  background-color: #fae9c8;
+}
+
+.btn-text-color {
+  color: #bc624c;
+}
