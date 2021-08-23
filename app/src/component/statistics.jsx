@@ -47,8 +47,6 @@ const Statistics = () => {
     setUser(u);
   };
 
-  useEffect(() => {}, []);
-
   useEffect(() => {
     if (user) {
       loadUserStatistics();
