@@ -1,5 +1,3 @@
-import Taro from "@tarojs/taro";
-
 var datas = [];
 var index = -1;
 
@@ -32,7 +30,7 @@ const random = (pre) => {
 }
 
 function initRandomDatas(pre){
-  const db = Taro.cloud.database();
+  const db = wx.cloud.database();
   return new Promise((resolve, reject) => {
     db.collection('audios')
       .count().then(res => {
