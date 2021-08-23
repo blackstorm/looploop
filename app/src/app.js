@@ -21,19 +21,12 @@ const App = (props) => {
     });
   };
 
-  const setupCloudbaseEnv = () => {
-    if (process.env.TARO_ENV === "weapp") {
-      Taro.cloud.init({
-        env: "default-5gswefsf8440cf4a",
-      });
-    }
-  }
-
   React.useEffect(() => {
+    wx.cloud.init({
+      env: "default-5gswefsf8440cf4a",
+    });
     // 更新 APP
     checkAndUpdate();
-    // 设置 cloudbase 环境
-    setupCloudbaseEnv();
   }, []);
 
   return props.children;

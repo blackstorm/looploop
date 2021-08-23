@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Taro from "@tarojs/taro";
-import { View, Text, Icon } from "@tarojs/components";
+import { View, Text } from "@tarojs/components";
 import { random } from "../../service/random";
 import Button from "../../component/button";
 import NavBar from "../../component/nav";
