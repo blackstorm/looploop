@@ -1,13 +1,33 @@
 import React, { useState, useEffect } from "react";
 import Footer from "./footer";
 import Header from "./header";
+import sdk from "@cloudbase/js-sdk";
 
 function App() {
+  const [cloudbase, setCloudbase] = useState();
   const [isDisabledSubmit, setIsDisabledSubmit] = useState(false);
+  const [audio, setAudio] = useState(undefined);
 
-  const onSubmit = () => {
+  const onSubmit = (e) => {
+    e.preventDefault();
     setIsDisabledSubmit(true);
+
+    const db = cloudbase.database();
+    db.collection("audios")
+      .orderBy("id", "desc")
+      .limit(1)
+      .get()
+      .then((res) => {
+        console.log(cloudbase, res);
+      });
   };
+
+  useEffect(() => {
+    const base = sdk.init({
+      env: "default-5gswefsf8440cf4a",
+    });
+    setCloudbase(base);
+  }, []);
 
   return (
     <div className="container">
@@ -22,14 +42,28 @@ function App() {
                 <label htmlFor="firstName" className="form-label">
                   英文
                 </label>
-                <input type="text" className="form-control" required />
+                <input
+                  type="text"
+                  className="form-control"
+                  required
+                  onChange={(e) =>
+                    setAudio({ ...audio, english: { text: e.target.value } })
+                  }
+                />
               </div>
 
               <div className="col-6">
                 <label htmlFor="firstName" className="form-label">
                   中文
                 </label>
-                <input type="text" className="form-control" required />
+                <input
+                  type="text"
+                  className="form-control"
+                  required
+                  onChange={(e) =>
+                    setAudio({ ...audio, chinese: { text: e.target.value } })
+                  }
+                />
               </div>
 
               <div className="col-6">
@@ -38,13 +72,28 @@ function App() {
                     <label htmlFor="lastName" className="form-label">
                       英文音频
                     </label>
-                    <input type="file" className="form-control" required />
+                    <input
+                      type="file"
+                      accept="audio/*"
+                      className="form-control"
+                      required
+                    />
                   </div>
                   <div className="col-4">
                     <label htmlFor="lastName" className="form-label">
                       英时长
                     </label>
-                    <input type="text" className="form-control" required />
+                    <input
+                      type="text"
+                      className="form-control"
+                      required
+                      onChange={(e) =>
+                        setAudio({
+                          ...audio,
+                          english: { time: e.target.value },
+                        })
+                      }
+                    />
                   </div>
                 </div>
               </div>
@@ -55,13 +104,28 @@ function App() {
                     <label htmlFor="lastName" className="form-label">
                       中文音频
                     </label>
-                    <input type="file" className="form-control" required />
+                    <input
+                      type="file"
+                      accept="audio/*"
+                      className="form-control"
+                      required
+                    />
                   </div>
                   <div className="col-4">
                     <label htmlFor="lastName" className="form-label">
                       中时长
                     </label>
-                    <input type="number" className="form-control" required />
+                    <input
+                      type="number"
+                      className="form-control"
+                      required
+                      onChange={(e) =>
+                        setAudio({
+                          ...audio,
+                          chinese: { time: e.target.value },
+                        })
+                      }
+                    />
                   </div>
                 </div>
               </div>
@@ -77,6 +141,12 @@ function App() {
                       className="form-control"
                       placeholder="不填写 ID 将会自动递增"
                       required
+                      onChange={(e) =>
+                        setAudio({
+                          ...audio,
+                          id: parseInt(e.target.value, 10),
+                        })
+                      }
                     />
                   </div>
                 </div>
