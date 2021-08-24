@@ -1,7 +1,8 @@
+import Taro from "@tarojs/taro";
 
 const savePlayRecord = (audio) => {
     if(audio) {
-        const db = wx.cloud.database()
+        const db = Taro.cloud.database();
         console.log(db)
         db.collection("user_play_records")
             .add({data:{audio_id: audio.id, create_time: new Date()}})
@@ -9,11 +10,14 @@ const savePlayRecord = (audio) => {
 }
 
 const countPlayRecord = (audio) => {
-    const db = wx.cloud.database()
-    return db.collection("user_play_records").where({
-        audio_id: audio?.id
+    const db = Taro.cloud.database();
+    return new Promise((resolve, reject) => {
+        db.collection("user_play_records").where({
+            audio_id: audio?.id
+        }).count().then(res => {
+            resolve(res.total)
+        })
     })
-    .count()
 }
 
 export {
