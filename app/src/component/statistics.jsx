@@ -1,16 +1,16 @@
 import { useState, useEffect } from "react";
 import { View, Text, Image, Button } from "@tarojs/components";
+import Taro from "@tarojs/taro";
 import "./statistics.css";
+import { EVENT_AUDIO_ENDEND } from "../event/audio";
 
 const NeedAuth = ({ onUserChange }) => {
   const onClick = () => {
-    console.log("on click");
     wx.getUserProfile({
       lang: "zh_CN",
       desc: "获取头像及昵称",
       success: (res) => {
-        console.log(res);
-        onUserChange(res.userInfo);
+        onUserChange &&onUserChange(res.userInfo);
       },
     });
   };
@@ -19,7 +19,7 @@ const NeedAuth = ({ onUserChange }) => {
     <View className="flex flex-col">
       <View className="mb-2">
         <Text className="text-xl font-medium text-black">
-          👋🏻 登录后可同步您的收听记录和时长。
+          👋🏻 登录后可同步收听记录和时长。
         </Text>
       </View>
       <View>
@@ -34,9 +34,14 @@ const NeedAuth = ({ onUserChange }) => {
   );
 };
 
+const STORAGE_USER_KEY_V1 = "user:v1";
+
 const Statistics = () => {
-  const [data, setData] = useState({ days: 0, audios: 0, senconds: 0 });
-  const [user, setUser] = useState(undefined);
+  const [data, setData] = useState();
+  const [user, setUser] = useState(() => {
+    const res = Taro.getStorageSync(STORAGE_USER_KEY_V1);
+    return res ? res : undefined;
+  });
 
   const loadUserStatistics = () => {
     // TODO
@@ -44,6 +49,7 @@ const Statistics = () => {
   };
 
   const onUserChange = (u) => {
+    Taro.setStorageSync(STORAGE_USER_KEY_V1, u);
     setUser(u);
   };
 
@@ -52,6 +58,17 @@ const Statistics = () => {
       loadUserStatistics();
     }
   }, [user]);
+
+  // 订阅 audio 事件
+  useEffect(() => {
+    const listener = (event) => {
+      console.log("TODO: update datas", event);
+    };
+    Taro.eventCenter.on(EVENT_AUDIO_ENDEND, listener);
+    return () => {
+      Taro.eventCenter.off(EVENT_AUDIO_ENDEND, listener);
+    };
+  }, []);
 
   return (
     <View

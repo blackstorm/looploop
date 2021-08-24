@@ -8,6 +8,7 @@ import qLoop from "./qloop";
 import cloudbase from "../../cloudbase";
 import { useUpdateEffect } from "ahooks";
 import Statistics from "../../component/statistics";
+import { EVENT_AUDIO_ENDEND } from "../../event/audio";
 
 const INIT_LOADING_MESSAGE = "加载音频中";
 const SKIP_AUDIO_TOAST_MESSAGE = "已跳过当前音频";
@@ -64,7 +65,9 @@ const Index = () => {
     bgm.coverImgUrl = LOOPLOOP_COVER_IMAGE_URL;
 
     // 音频生命周期钩子
-    bgm.onEnded(onEnded);
+    bgm.onEnded(() => {
+      onEnded(task);
+    });
     // 仅 IOS生效
     bgm.onNext(onNext);
 
@@ -73,7 +76,11 @@ const Index = () => {
   };
 
   // 当音频播完成
-  const onEnded = () => {
+  const onEnded = (task) => {
+    // 广播 event
+    Taro.eventCenter.trigger(EVENT_AUDIO_ENDEND, task);
+
+    // 延迟播放下一条，并设置定时器
     let t = null;
     if (q.isEmpty()) {
       t = setTimeout(randomAndSetQ, 2000);

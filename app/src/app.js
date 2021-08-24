@@ -2,6 +2,7 @@ import "windi.css";
 import "./app.css";
 import React from "react";
 import Taro from "@tarojs/taro";
+import AudioEventListener from "./listener/audio";
 
 const App = (props) => {
   // 检查并更新版本
@@ -29,6 +30,14 @@ const App = (props) => {
     wx.cloud.init({
       env: "default-5gswefsf8440cf4a",
     });
+
+    // 监听相关事件
+    AudioEventListener.listen();
+
+    // 移除相关监听
+    return () => {
+      AudioEventListener.unListen();
+    };
   }, []);
 
   return props.children;
