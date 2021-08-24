@@ -27,7 +27,7 @@ const Index = () => {
   // 当前定时器
   const [timer, setTimer] = useState(undefined);
 
-  const onClickSkip = () => {
+  const onClickNext = () => {
     // 清除定时器
     if (timer) {
       clearTimeout(timer);
@@ -79,7 +79,6 @@ const Index = () => {
   const onEnded = (task) => {
     // 广播 event
     Taro.eventCenter.trigger(EVENT_AUDIO_ENDEND, task);
-
     // 延迟播放下一条，并设置定时器
     let t = null;
     if (q.isEmpty()) {
@@ -92,7 +91,7 @@ const Index = () => {
 
   // 下一首
   const onNext = () => {
-    onClickSkip();
+    onClickNext();
   };
 
   // 随机音频并设置队列
@@ -106,19 +105,17 @@ const Index = () => {
 
   // 监听首次调用并关闭 loading
   useEffect(() => {
+    // 显示加载中
+    Taro.showLoading({
+      title: INIT_LOADING_MESSAGE,
+    });
     // 小程序转发支持
     Taro.showShareMenu({
       withShareTicket: true,
     });
     setInitLoading(true);
+    // 随机音频并设置队列
     randomAndSetQ();
-  }, []);
-
-  // 首次进入加载 loading
-  useEffect(() => {
-    Taro.showLoading({
-      title: INIT_LOADING_MESSAGE,
-    });
   }, []);
 
   // 清除 laoding
@@ -148,7 +145,7 @@ const Index = () => {
 
       {!initLoading && (
         <View className="absolute bottom-0 px-4 mb-10 flex w-full">
-          <Button onClick={onClickSkip}>下一个</Button>
+          <Button onClick={onClickNext}>下一个</Button>
         </View>
       )}
     </View>
