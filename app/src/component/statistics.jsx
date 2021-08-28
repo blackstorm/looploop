@@ -3,6 +3,7 @@ import { View, Text, Image, Button } from "@tarojs/components";
 import Taro from "@tarojs/taro";
 import "./statistics.css";
 import { EVENT_AUDIO_ENDEND } from "../event/audio";
+import { statistics } from "../service/userPlayRecords";
 
 const NeedAuth = ({ onUserChange }) => {
   const onClick = () => {
@@ -38,15 +39,17 @@ const STORAGE_USER_KEY_V1 = "user:v1";
 
 // TIPS： dont use data for state field~
 const Statistics = () => {
-  const [info, setInfo] = useState({ count: 100, duration: 600 });
+  const [info, setInfo] = useState();
   const [user, setUser] = useState(() => {
     const res = Taro.getStorageSync(STORAGE_USER_KEY_V1);
     return res ? res : undefined;
   });
 
   const loadUserStatistics = () => {
-    // TODO
-    // setData();
+    statistics().then((res) => {
+      console.log("load user statics", res)
+      setInfo(res);
+    });
   };
 
   const onUserChange = (u) => {
@@ -55,10 +58,8 @@ const Statistics = () => {
   };
 
   useEffect(() => {
-    if (user) {
-      loadUserStatistics();
-    }
-  }, [user]);
+    loadUserStatistics();
+  }, []);
 
   // 订阅 audio 事件
   useEffect(() => {
@@ -67,7 +68,7 @@ const Statistics = () => {
       // 防止引用失效问题
       setInfo((val) => {
         const duration = val.duration + (audio.duration ? audio.duration : 0);
-        return { count: val.count + 1, duration: duration };
+        return { counts: val.counts + 1, duration: duration };
       });
     };
     Taro.eventCenter.on(EVENT_AUDIO_ENDEND, listener);
@@ -88,8 +89,7 @@ const Statistics = () => {
         <>
           <View className="mr-2">
             <Text className="text-xl font-medium text-white">
-              👋🏻 你收听了 {info.count} 个句子 🕒 时长 {info.duration / 60}{" "}
-              分钟。
+              👋🏻 你收听了 {info.counts} 个句子 🕒 时长 {(info.duration / 60).toFixed(0)} 分钟。
             </Text>
           </View>
           <View className="flex flex-col">

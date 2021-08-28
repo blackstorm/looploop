@@ -5,10 +5,12 @@ import { EN, ZH } from "../../lang";
 const qLoop = (audio) => {
   const tasks = [];
   const en = {
+    id: audio.id,
     audio: audio.en,
     lang: EN,
   };
   const zh = {
+    id: audio.id,
     audio: audio.zh,
     lang: ZH,
   };
