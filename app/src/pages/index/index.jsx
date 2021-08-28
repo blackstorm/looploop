@@ -7,6 +7,8 @@ import NavBar from "../../component/nav";
 import qLoop from "./qloop";
 import cloudbase from "../../cloudbase";
 import { useUpdateEffect } from "ahooks";
+import Statistics from "../../component/statistics";
+import { EVENT_AUDIO_ENDEND } from "../../event/audio";
 
 const INIT_LOADING_MESSAGE = "加载音频中";
 const SKIP_AUDIO_TOAST_MESSAGE = "已跳过当前音频";
@@ -25,7 +27,7 @@ const Index = () => {
   // 当前定时器
   const [timer, setTimer] = useState(undefined);
 
-  const onClickSkip = () => {
+  const onClickNext = () => {
     // 清除定时器
     if (timer) {
       clearTimeout(timer);
@@ -49,7 +51,8 @@ const Index = () => {
   // 播放音频
   const play = () => {
     const task = q.shift();
-    const src = cloudbase.auidoSrc(task.path);
+    const { audio } = task;
+    const src = cloudbase.auidoSrc(audio.path);
 
     // 音频管理
     const bgm = Taro.getBackgroundAudioManager();
@@ -57,22 +60,27 @@ const Index = () => {
     // 微信开发者工具有 BUG 不用关心
     bgm.src = src;
     bgm.currentTime = 0;
-    bgm.title = task.text;
+    bgm.title = audio.text;
     bgm.singer = "循环英语";
     bgm.epname = "RANDOM";
     bgm.coverImgUrl = LOOPLOOP_COVER_IMAGE_URL;
 
     // 音频生命周期钩子
-    bgm.onEnded(onEnded);
+    bgm.onEnded(() => {
+      onEnded(task);
+    });
     // 仅 IOS生效
     bgm.onNext(onNext);
 
     // 展示文本
-    setText(task.text);
+    setText(audio.text);
   };
 
   // 当音频播完成
-  const onEnded = () => {
+  const onEnded = (task) => {
+    // 广播 event
+    Taro.eventCenter.trigger(EVENT_AUDIO_ENDEND, task);
+    // 延迟播放下一条，并设置定时器
     let t = null;
     if (q.isEmpty()) {
       t = setTimeout(randomAndSetQ, 2000);
@@ -84,7 +92,7 @@ const Index = () => {
 
   // 下一首
   const onNext = () => {
-    onClickSkip();
+    onClickNext();
   };
 
   // 随机音频并设置队列
@@ -98,19 +106,17 @@ const Index = () => {
 
   // 监听首次调用并关闭 loading
   useEffect(() => {
+    // 显示加载中
+    Taro.showLoading({
+      title: INIT_LOADING_MESSAGE,
+    });
     // 小程序转发支持
     Taro.showShareMenu({
       withShareTicket: true,
     });
     setInitLoading(true);
+    // 随机音频并设置队列
     randomAndSetQ();
-  }, []);
-
-  // 首次进入加载 loading
-  useEffect(() => {
-    Taro.showLoading({
-      title: INIT_LOADING_MESSAGE,
-    });
   }, []);
 
   // 清除 laoding
@@ -134,9 +140,13 @@ const Index = () => {
         </Text>
       </View>
 
+      <View className="absolute bottom-20 px-4 mb-10 px-4 w-full">
+        <Statistics />
+      </View>
+
       {!initLoading && (
         <View className="absolute bottom-0 px-4 mb-10 flex w-full">
-          <Button onClick={onClickSkip}>跳过</Button>
+          <Button onClick={onClickNext}>下一个</Button>
         </View>
       )}
     </View>

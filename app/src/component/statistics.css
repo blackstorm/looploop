@@ -1,0 +1,25 @@
+.statistics {
+  background-color: #f49e39db;
+}
+
+.need-auth {
+  background-color: #f9eac8;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0% {
+    transform: translate(0px, 0px);
+  }
+  50% {
+    transform: translate(0px, -10px);
+  }
+  100% {
+    transform: translate(0px, 0px);
+  }
+}
+
+.auth-btn {
+  color: #005858;
+  background-color: #90bcc2; 
+}
