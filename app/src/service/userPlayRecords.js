@@ -1,27 +1,45 @@
-import Taro from "@tarojs/taro";
 
-const savePlayRecord = (audio) => {
-    if(audio) {
-        const db = Taro.cloud.database();
-        console.log(db)
+const record = ({ audio, lang }) => {
+    if (audio) {
+        const db = wx.cloud.database();
         db.collection("user_play_records")
-            .add({data:{audio_id: audio.id, create_time: new Date()}})
+            .add({ data: { audio_id: audio.id, lang: lang, create_time: new Date() } })
     }
 }
 
-const countPlayRecord = (audio) => {
-    const db = Taro.cloud.database();
+const statistics = () => {
+    const db = wx.cloud.database();
     return new Promise((resolve, reject) => {
-        db.collection("user_play_records").where({
-            audio_id: audio?.id
-        }).count().then(res => {
-            resolve(res.total)
+        const a = db.collection("user_play_records").get().then(res => {
+            // 查询记录
+            const _ = db.command;
+            const audioIds = res.data.map(it => it.audio_id);
+            db.collection("audios").where({
+                id: _.in(audioIds)
+            }).get().then(res2 => {
+                // 统计时长
+                const result = res2.data.reduce((r, it) => {
+                    r[it.id] = it;
+                    return r;
+                }, {});
+                console.log(result)
+                let totalDuration = 0;
+                res.data.forEach(element => {
+                    console.log(element)
+                    if (element.lang === 'zh') {
+                        totalDuration += result[element.audio_id].chinese.duration;
+                    } else {
+                        totalDuration += result[element.audio_id].english.duration;
+                    }
+                });
+                resolve({ counts: audioIds.length, duration: totalDuration })
+            })
         })
     })
 }
 
 export {
-    savePlayRecord,
-    countPlayRecord
+    record,
+    statistics
 }
 

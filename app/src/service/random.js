@@ -44,7 +44,7 @@ function initRandomDatas(pre){
         }).get().then(res => {
           let dataList = [];
           res.data.forEach(function (item, index, array) {
-            dataList.push({id: item.id, zh: {path: item.chinese.audio_path, text: item.chinese.text}, en: {path: item.english.audio_path, text: item.english.text}});
+            dataList.push(new Audio(item));
           });
           datas = dataList
           console.log(" datas " ,datas, res.data)
@@ -57,6 +57,21 @@ function initRandomDatas(pre){
 function nextData(){
   index++;
   return datas[index];
+}
+
+// 音频数据
+function Audio(audioDB){
+  this.id = audioDB.id;
+  this.zh = {
+    path: audioDB.chinese.audio_path,
+    text: audioDB.chinese.text,
+    duration:audioDB.chinese.duration
+  };
+  this.en = {
+    path: audioDB.english.audio_path,
+    text: audioDB.english.text,
+    duration:audioDB.english.duration
+  };
 }
 
 function randomId(pre, total){
