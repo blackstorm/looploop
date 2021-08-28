@@ -1,9 +1,10 @@
 import { EVENT_AUDIO_ENDEND } from "../event/audio";
 import Taro from "@tarojs/taro";
+import { record } from "../service/userPlayRecords";
 
 const createAudioEventListener = () => {
-  const handler = (events) => {
-    console.log("TODO: save to databse");
+  const handler = (event) => {
+    record(event);
   };
 
   const listen = () => {
