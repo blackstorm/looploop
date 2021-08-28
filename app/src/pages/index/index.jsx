@@ -100,9 +100,7 @@ const Index = () => {
     random(loop).then((res) => {
       setLoop(res);
       setQ(qLoop(res));
-      if (initLoading) {
-        setInitLoading(false)
-      }
+      setInitLoading(false);
     });
   };
 
