@@ -51,7 +51,8 @@ const Index = () => {
   // 播放音频
   const play = () => {
     const task = q.shift();
-    const src = cloudbase.auidoSrc(task.path);
+    const { audio } = task;
+    const src = cloudbase.auidoSrc(audio.path);
 
     // 音频管理
     const bgm = Taro.getBackgroundAudioManager();
@@ -59,7 +60,7 @@ const Index = () => {
     // 微信开发者工具有 BUG 不用关心
     bgm.src = src;
     bgm.currentTime = 0;
-    bgm.title = task.text;
+    bgm.title = audio.text;
     bgm.singer = "循环英语";
     bgm.epname = "RANDOM";
     bgm.coverImgUrl = LOOPLOOP_COVER_IMAGE_URL;
@@ -72,7 +73,7 @@ const Index = () => {
     bgm.onNext(onNext);
 
     // 展示文本
-    setText(task.text);
+    setText(audio.text);
   };
 
   // 当音频播完成
@@ -139,7 +140,7 @@ const Index = () => {
         </Text>
       </View>
 
-      <View className="absolute bottom-20 px-4 mb-10 px-4 ">
+      <View className="absolute bottom-20 px-4 mb-10 px-4 w-full">
         <Statistics />
       </View>
 

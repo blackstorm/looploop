@@ -10,13 +10,13 @@ const NeedAuth = ({ onUserChange }) => {
       lang: "zh_CN",
       desc: "获取头像及昵称",
       success: (res) => {
-        onUserChange &&onUserChange(res.userInfo);
+        onUserChange && onUserChange(res.userInfo);
       },
     });
   };
 
   return (
-    <View className="flex flex-col">
+    <View className="flex flex-col w-full">
       <View className="mb-2">
         <Text className="text-xl font-medium text-black">
           👋🏻 登录后可同步收听记录和时长。
@@ -36,8 +36,9 @@ const NeedAuth = ({ onUserChange }) => {
 
 const STORAGE_USER_KEY_V1 = "user:v1";
 
+// TIPS： dont use data for state field~
 const Statistics = () => {
-  const [data, setData] = useState();
+  const [info, setInfo] = useState({ count: 100, duration: 600 });
   const [user, setUser] = useState(() => {
     const res = Taro.getStorageSync(STORAGE_USER_KEY_V1);
     return res ? res : undefined;
@@ -45,7 +46,7 @@ const Statistics = () => {
 
   const loadUserStatistics = () => {
     // TODO
-    setData();
+    // setData();
   };
 
   const onUserChange = (u) => {
@@ -62,7 +63,12 @@ const Statistics = () => {
   // 订阅 audio 事件
   useEffect(() => {
     const listener = (event) => {
-      console.log("TODO: update datas", event);
+      const { audio } = event;
+      // 防止引用失效问题
+      setInfo((val) => {
+        const duration = val.duration + (audio.duration ? audio.duration : 0);
+        return { count: val.count + 1, duration: duration };
+      });
     };
     Taro.eventCenter.on(EVENT_AUDIO_ENDEND, listener);
     return () => {
@@ -78,11 +84,12 @@ const Statistics = () => {
       }
     >
       {!user && <NeedAuth onUserChange={onUserChange} />}
-      {user && (
+      {user && info && (
         <>
           <View className="mr-2">
             <Text className="text-xl font-medium text-white">
-              👋🏻 过去的 180 天里你收听了 1000 个句子 🕒 时长 90 分钟。
+              👋🏻 你收听了 {info.count} 个句子 🕒 时长 {info.duration / 60}{" "}
+              分钟。
             </Text>
           </View>
           <View className="flex flex-col">
