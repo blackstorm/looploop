@@ -47,7 +47,6 @@ const Statistics = () => {
 
   const loadUserStatistics = () => {
     statistics().then((res) => {
-      console.log("load user statics", res)
       setInfo(res);
     });
   };
@@ -89,7 +88,8 @@ const Statistics = () => {
         <>
           <View className="mr-2">
             <Text className="text-xl font-medium text-white">
-              👋🏻 你收听了 {info.counts} 个句子 🕒 时长 {(info.duration / 60).toFixed(0)} 分钟。
+              👋🏻 你收听了 {info.counts} 个句子 🕒 时长{" "}
+              {(info.duration / 60).toFixed(0)} 分钟。
             </Text>
           </View>
           <View className="flex flex-col">
