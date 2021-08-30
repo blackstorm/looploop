@@ -1,33 +1,62 @@
 import React, { useState, useEffect } from "react";
 import Footer from "./footer";
 import Header from "./header";
-import sdk from "@cloudbase/js-sdk";
+import { detectAudioDuration } from "./util";
+import { add } from "./api";
+
+const onAudioFileSelectedHandlerFactor = (callback) => {
+  return (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      detectAudioDuration(file, (duration) => {
+        callback && callback(file, duration);
+      });
+    }
+  };
+};
+
+const initAudio = {
+  english: {},
+  chinese: {},
+};
 
 function App() {
-  const [cloudbase, setCloudbase] = useState();
   const [isDisabledSubmit, setIsDisabledSubmit] = useState(false);
-  const [audio, setAudio] = useState(undefined);
+  const [audio, setAudio] = useState(initAudio);
 
   const onSubmit = (e) => {
     e.preventDefault();
-    setIsDisabledSubmit(true);
+    // setIsDisabledSubmit(true);
+    const formData = new FormData();
 
-    const db = cloudbase.database();
-    db.collection("audios")
-      .orderBy("id", "desc")
-      .limit(1)
-      .get()
-      .then((res) => {
-        console.log(cloudbase, res);
-      });
+    formData.append("en_text", audio.english.text);
+    formData.append("en_file", audio.english.file);
+    formData.append("en_duration", audio.english.duration);
+
+    formData.append("zh_text", audio.chinese.text);
+    formData.append("zh_file", audio.chinese.file);
+    formData.append("zh_duration", audio.chinese.duration);
+
+    add(formData, (res) => {
+      console.log(res);
+    });
   };
 
-  useEffect(() => {
-    const base = sdk.init({
-      env: "default-5gswefsf8440cf4a",
-    });
-    setCloudbase(base);
-  }, []);
+  const onEnAudioSelected = onAudioFileSelectedHandlerFactor(
+    (file, duration) => {
+      audio.english.file = file;
+      audio.english.duration = duration;
+      setAudio(audio);
+    }
+  );
+
+  const onZhAudioSelected = onAudioFileSelectedHandlerFactor(
+    (file, duration) => {
+      audio.chinese.file = file;
+      audio.chinese.duration = duration;
+      setAudio(audio);
+    }
+  );
 
   return (
     <div className="container">
@@ -46,9 +75,10 @@ function App() {
                   type="text"
                   className="form-control"
                   required
-                  onChange={(e) =>
-                    setAudio({ ...audio, english: { text: e.target.value } })
-                  }
+                  onChange={(e) => {
+                    audio.english.text = e.target.value;
+                    setAudio(audio);
+                  }}
                 />
               </div>
 
@@ -60,9 +90,10 @@ function App() {
                   type="text"
                   className="form-control"
                   required
-                  onChange={(e) =>
-                    setAudio({ ...audio, chinese: { text: e.target.value } })
-                  }
+                  onChange={(e) => {
+                    audio.chinese.text = e.target.value;
+                    setAudio(audio);
+                  }}
                 />
               </div>
 
@@ -77,23 +108,22 @@ function App() {
                       accept="audio/*"
                       className="form-control"
                       required
+                      onChange={onEnAudioSelected}
                     />
                   </div>
                   <div className="col-4">
                     <label htmlFor="lastName" className="form-label">
                       英时长
                     </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      required
-                      onChange={(e) =>
-                        setAudio({
-                          ...audio,
-                          english: { time: e.target.value },
-                        })
-                      }
-                    />
+                    {audio.english.duration && (
+                      <input
+                        type="number"
+                        className="form-control"
+                        required
+                        readOnly="readonly"
+                        value={audio.english.duration.toFixed(1)}
+                      />
+                    )}
                   </div>
                 </div>
               </div>
@@ -109,45 +139,22 @@ function App() {
                       accept="audio/*"
                       className="form-control"
                       required
+                      onChange={onZhAudioSelected}
                     />
                   </div>
                   <div className="col-4">
                     <label htmlFor="lastName" className="form-label">
                       中时长
                     </label>
-                    <input
-                      type="number"
-                      className="form-control"
-                      required
-                      onChange={(e) =>
-                        setAudio({
-                          ...audio,
-                          chinese: { time: e.target.value },
-                        })
-                      }
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-12">
-                <div className="row">
-                  <div className="col-12">
-                    <label htmlFor="lastName" className="form-label">
-                      ID
-                    </label>
-                    <input
-                      type="number"
-                      className="form-control"
-                      placeholder="不填写 ID 将会自动递增"
-                      required
-                      onChange={(e) =>
-                        setAudio({
-                          ...audio,
-                          id: parseInt(e.target.value, 10),
-                        })
-                      }
-                    />
+                    {audio.chinese.duration && (
+                      <input
+                        type="number"
+                        className="form-control"
+                        required
+                        readOnly="readonly"
+                        value={audio.chinese.duration.toFixed(1)}
+                      />
+                    )}
                   </div>
                 </div>
               </div>
