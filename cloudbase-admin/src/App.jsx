@@ -23,6 +23,8 @@ const initAudio = {
 function App() {
   const [isDisabledSubmit, setIsDisabledSubmit] = useState(false);
   const [audio, setAudio] = useState(initAudio);
+  const [enDuration, setEnDuration] = useState(undefined);
+  const [zhDuration, setZhDuration] = useState(undefined);
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -47,6 +49,8 @@ function App() {
       audio.english.file = file;
       audio.english.duration = duration;
       setAudio(audio);
+
+      setEnDuration(duration);
     }
   );
 
@@ -55,6 +59,8 @@ function App() {
       audio.chinese.file = file;
       audio.chinese.duration = duration;
       setAudio(audio);
+
+      setZhDuration(duration);
     }
   );
 
@@ -115,15 +121,9 @@ function App() {
                     <label htmlFor="lastName" className="form-label">
                       英时长
                     </label>
-                    {audio.english.duration && (
-                      <input
-                        type="number"
-                        className="form-control"
-                        required
-                        readOnly="readonly"
-                        value={audio.english.duration.toFixed(1)}
-                      />
-                    )}
+                    <div>
+                      <b>{enDuration && enDuration.toFixed(1)}</b>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -146,15 +146,9 @@ function App() {
                     <label htmlFor="lastName" className="form-label">
                       中时长
                     </label>
-                    {audio.chinese.duration && (
-                      <input
-                        type="number"
-                        className="form-control"
-                        required
-                        readOnly="readonly"
-                        value={audio.chinese.duration.toFixed(1)}
-                      />
-                    )}
+                    <div>
+                      <b>{zhDuration && zhDuration.toFixed(1)}</b>
+                    </div>
                   </div>
                 </div>
               </div>

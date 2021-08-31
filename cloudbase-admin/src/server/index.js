@@ -25,7 +25,7 @@ app.use(
 );
 
 app.post("/api/v1", upload.any(), async (req, resp) => {
-  console.log("form data", req.body, req.files);
+  // console.log("form data", req.body, req.files);
   const db = tcbApp.database();
   const audiosCollection = db.collection("audios");
 
@@ -37,7 +37,6 @@ app.post("/api/v1", upload.any(), async (req, resp) => {
     })
     .limit(1)
     .end();
-
   const last = lastAudio.data[0];
 
   const id = last.id + 1;
@@ -60,16 +59,20 @@ app.post("/api/v1", upload.any(), async (req, resp) => {
     },
     id: id,
   });
+  console.log("保存到数据库成功", id, Date.now());
 
   // 保存到存储
-  await tcbApp.uploadFile({
-    cloudPath: en_audio_path.substring(1),
-    fileContent: enFile.buffer,
-  });
-  await tcbApp.uploadFile({
-    cloudPath: zh_audio_path.substring(1),
-    fileContent: zhFile.buffer,
-  });
+  await Promise.all([
+    tcbApp.uploadFile({
+      cloudPath: en_audio_path.substring(1),
+      fileContent: enFile.buffer,
+    }),
+    tcbApp.uploadFile({
+      cloudPath: zh_audio_path.substring(1),
+      fileContent: zhFile.buffer,
+    }),
+  ]);
+  console.log("保存到存储成功", id, Date.now());
 
   resp.send(lastAudio);
 });
