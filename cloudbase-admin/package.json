@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@cloudbase/manager-node": "^3.9.3",
+    "@cloudbase/node-sdk": "^2.7.1",
     "axios": "^0.21.1",
     "cors": "^2.8.5",
     "express": "^4.17.1",
