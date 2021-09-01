@@ -5,13 +5,28 @@ import "./statistics.css";
 import { EVENT_AUDIO_ENDEND } from "../event/audio";
 import { statistics } from "../service/userPlayRecords";
 
+const DEFAULT_NEED_AUTH_BTN_TEXT = "点击获取用户信息";
+
 const NeedAuth = ({ onUserChange }) => {
+  const [btnText, setBtnText] = useState(DEFAULT_NEED_AUTH_BTN_TEXT);
+  const [isBtnDisabled, setIsBtnDisabled] = useState(false);
+
   const onClick = () => {
+    setBtnText("Loading...");
+    setIsBtnDisabled(true);
+    Taro.showLoading({
+      title: "Loading...",
+    });
     wx.getUserProfile({
       lang: "zh_CN",
       desc: "获取头像及昵称",
       success: (res) => {
         onUserChange && onUserChange(res.userInfo);
+      },
+      complete: () => {
+        Taro.hideLoading();
+        setBtnText(DEFAULT_NEED_AUTH_BTN_TEXT);
+        setIsBtnDisabled(false);
       },
     });
   };
@@ -27,8 +42,9 @@ const NeedAuth = ({ onUserChange }) => {
         <Button
           className="auth-btn text-black text-base px-6 py-2"
           onClick={onClick}
+          disabled={isBtnDisabled}
         >
-          点击获取用户信息
+          {btnText}
         </Button>
       </View>
     </View>
