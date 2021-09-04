@@ -54,7 +54,7 @@ app.post("/api/v1", upload.any(), async (req, resp) => {
     },
     chinese: {
       audio_path: zh_audio_path,
-      text: req.body.en_text,
+      text: req.body.zh_text,
       duration: parseFloat(req.body.zh_duration),
     },
     id: id,
