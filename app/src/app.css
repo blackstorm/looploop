@@ -3,8 +3,14 @@
   max-height: 100vh;
 }
 
-page,view,text,swiper,swiper-item,image,navigator{
-  padding: 0;    
+page,
+view,
+text,
+swiper,
+swiper-item,
+image,
+navigator {
+  padding: 0;
   margin: 0;
   box-sizing: border-box;
 }
@@ -40,4 +46,8 @@ page {
 
 .btn-text-color {
   color: #bc624c;
+}
+
+.dynamic-text {
+  /* text-shadow: 2px 2px black; */
 }
