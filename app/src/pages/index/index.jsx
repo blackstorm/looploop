@@ -104,12 +104,15 @@ const Index = () => {
     });
   };
 
-  // 监听首次调用并关闭 loading
+  // 显示加载中
   useEffect(() => {
-    // 显示加载中
     Taro.showLoading({
       title: INIT_LOADING_MESSAGE,
     });
+  }, []);
+
+  // 监听首次调用并关闭 loading
+  useEffect(() => {
     // 小程序转发支持
     Taro.showShareMenu({
       withShareTicket: true,
@@ -134,8 +137,11 @@ const Index = () => {
   return (
     <View className="root">
       <NavBar />
-      <View className="mt-20 px-4 flex flex-col">
-        <Text selectable className="text-white text-3xl font-medium">
+      <View className="mt-10 px-4 flex flex-col">
+        <Text
+          user-select
+          className="text-white text-3xl font-medium dynamic-text"
+        >
           {text}
         </Text>
       </View>
@@ -144,11 +150,11 @@ const Index = () => {
         <Statistics />
       </View>
 
-      {!initLoading && (
-        <View className="absolute bottom-0 px-4 mb-10 flex w-full">
-          <Button onClick={onClickNext}>下一个</Button>
-        </View>
-      )}
+      <View className="absolute bottom-0 px-4 mb-10 flex w-full">
+        <Button onClick={onClickNext} disabled={initLoading}>
+          下一个
+        </Button>
+      </View>
     </View>
   );
 };

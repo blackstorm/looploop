@@ -6,7 +6,7 @@ export default {
     navigationBarTitleText: "WeChat",
     navigationBarTextStyle: "white",
     navigationStyle: "custom",
-    disableScroll: true,
+    // disableScroll: true,
   },
   requiredBackgroundModes: ["audio"],
 };

@@ -2,7 +2,7 @@ import Logo from "../assert/image/logo.png";
 import { NavBar as TNavBar } from "taro-navigationbar-v3";
 import { View, Text, Image } from "@tarojs/components";
 
-const NavBar = () => {
+const NavBar = (props) => {
   return (
     <TNavBar
       background="#e94c3d"
